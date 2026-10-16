@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>簡易グルラ</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 320px;
+            text-align: center;
+        }
+        h2 { margin-top: 0; color: #333; }
+        input {
+            width: 85%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            text-align: center;
+        }
+        button {
+            width: 90%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>簡易グルラ</h2>
+        
+        <!-- ホーム画面（部屋を作る・入る） -->
+        <div id="home-screen">
+            <button onclick="createRoom()">新しい部屋を作る</button>
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+            <input type="text" id="room-code-input" placeholder="部屋コードを入力">
+            <br>
+            <button onclick="joinRoom()" style="background-color: #28a745;">部屋に参加する</button>
+        </div>
+
+        <!-- チャット画面（初期は非表示） -->
+        <div id="chat-screen" style="display: none;">
+            <h3 id="room-title" style="color: #007bff; margin-bottom: 10px;">部屋</h3>
+            <div id="message-box" style="background: #f9f9f9; height: 160px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 10px; padding: 8px; overflow-y: auto; text-align: left;">
+                <p style="color: #888; font-size: 14px; text-align: center;">（メッセージはまだありません）</p>
+            </div>
+            <input type="text" id="msg-input" placeholder="メッセージを入力" style="width: 85%;">
+            <br>
+            <button onclick="sendMessage()" style="background-color: #ffc107; color: #333; margin-top: 5px;">送信する</button>
+            <br>
+            <button onclick="leaveRoom()" style="background-color: #dc3545; margin-top: 15px; font-size: 14px; padding: 6px;">部屋を出る</button>
+        </div>
+    </div>
+
+    <script>
+        let currentRoom = null;
+
+        function createRoom() {
+            // 4桁のランダムなコードを作る
+            const randomCode = Math.floor(1000 + Math.random() * 9000);
+            currentRoom = randomCode;
+            
+            // 画面をチャット用に切り替え
+            document.getElementById("home-screen").style.display = "none";
+            document.getElementById("chat-screen").style.display = "block";
+            document.getElementById("room-title").innerText = "部屋コード: " + currentRoom;
+            alert("部屋を作りました！コードは " + currentRoom + " です。");
+        }
+
+        function joinRoom() {
+            const code = document.getElementById("room-code-input").value.trim();
+            if (code === "") {
+                alert("部屋コードを入力してください！");
+                return;
+            }
+            currentRoom = code;
+            
+            // 画面をチャット用に切り替え
+            document.getElementById("home-screen").style.display = "none";
+            document.getElementById("chat-screen").style.display = "block";
+            document.getElementById("room-title").innerText = "部屋コード: " + currentRoom;
+        }
+
+        function leaveRoom() {
+            currentRoom = null;
+            document.getElementById("chat-screen").style.display = "none";
+            document.getElementById("home-screen").style.display = "block";
+            document.getElementById("room-code-input").value = "";
+            document.getElementById("message-box").innerHTML = '<p style="color: #888; font-size: 14px; text-align: center;">（メッセージはまだありません）</p>';
+        }
+
+        function sendMessage() {
+            const msgInput = document.getElementById("msg-input");
+            const text = msgInput.value.trim();
+            if (text === "") return;
+
+            const box = document.getElementById("message-box");
+            if (box.innerHTML.includes("メッセージはまだありません")) {
+                box.innerHTML = "";
+            }
+
+            const p = document.createElement("p");
+            p.style.margin = "6px 0";
+            p.style.borderBottom = "1px solid #eee";
+            p.style.paddingBottom = "4px";
+            p.innerText = "あなた: " + text;
+            box.appendChild(p);
+
+            msgInput.value = "";
+            box.scrollTop = box.scrollHeight; // 一番下までスクロール
+        }
+    </script>
+
+</body>
+</html>
